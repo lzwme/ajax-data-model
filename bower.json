@@ -1,0 +1,33 @@
+{
+  "name": "ajax-data-model",
+  "description": "ajax data model, ajax 通用数据请求处理",
+  "main": "lib/adm.jquery.js",
+  "authors": [
+    "lzwme",
+    "renxia"
+  ],
+  "moduleType": [
+    "umd"
+  ],
+  "license": "MIT",
+  "keywords": [
+    "ajax",
+    "data-model",
+    "webpack",
+    "es6",
+    "library",
+    "universal",
+    "umd",
+    "commonjs"
+  ],
+  "homepage": "https://github.com/lzwme/ajax-data-model",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests",
+    "api",
+    "server"
+  ]
+}
