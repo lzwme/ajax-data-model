@@ -319,6 +319,42 @@ export default {
         return _cache;
     },
     /**
+     * {@link module:dataModel.get} 的 ajax 快捷方法
+     * @see  module:dataModel.get
+     * @param  {String}   url         url 地址
+     * @param  {Object}  data        要传递的参数，可省略
+     * @param  {Function} callback    成功回调
+     * @param  {Function}   errCallback 失败回调
+     * @returns {Deferred} $.Deferred
+     */
+    getJSON(url, data = {}, callback, errCallback) {
+        // data 参数可以省略
+        if ($.isFunction(data)) {
+            errCallback = callback;
+            callback = data;
+        }
+
+        return this.get({
+            url,
+            data
+        }, callback, errCallback);
+    },
+    /**
+     * {@link module:dataModel.save} 的 ajax 快捷方法
+     * @see  module:dataModel.save
+     * @param  {String}   url         url 地址
+     * @param  {Object}  data        要传递的参数
+     * @param  {Function} callback    成功回调
+     * @param  {Function}   errCallback 失败回调
+     * @returns {Deferred} $.Deferred
+     */
+    post(url, data, callback, errCallback) {
+        return this.save({
+            url,
+            data
+        }, callback, errCallback);
+    },
+    /**
      * 根据存储类型清空存储的所有数据
      * @param  {String} cacheType
      * @return {scope} this

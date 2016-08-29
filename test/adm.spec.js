@@ -37,6 +37,22 @@ describe('test: ajax 测试', function () {
             });
         });
 
+        it(`ajax getJSON: ${url}`, function (next) {
+            adm.getJSON(url, (result) => {
+                expect(result.code).to.be.equal(200);
+
+                next();
+            });
+        });
+
+        it(`ajax post: ${url}`, function (next) {
+            adm.getJSON(url, {}, (result) => {
+                expect(result.code).to.be.equal(200);
+
+                next();
+            });
+        });
+
         cacheTest(url, 'memory');
         cacheTest(url, 'sessionStorage');
         cacheTest(url, 'localStorage');

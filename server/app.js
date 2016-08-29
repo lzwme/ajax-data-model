@@ -15,7 +15,7 @@ router.get('/', function (ctx, next) {
     ctx.body = fs.readFileSync('./example/index.html', 'utf8');
 });
 
-router.get('/rest/user', function (ctx, next) {
+router.all('/rest/user', function (ctx, next) {
     ctx.body = JSON.stringify({
         code: 200,
         message: 'success',
@@ -39,6 +39,6 @@ app
   .use(router.routes())
   .use(router.allowedMethods());
 
-app.listen(3001, () => {
-    console.log('listen port 3001.');
+app.listen(3011, () => {
+    console.log('listen port 3011.');
 });

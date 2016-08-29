@@ -29,3 +29,5 @@ localStorageTemp
 
 # api docs
 /api/
+
+coverage/
