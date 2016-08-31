@@ -5,6 +5,7 @@
  */
 export default {
     cachePrefix: '__DM__', // 缓存数据时使用的前缀
+    isJquery: true,        // 是否使用 jQuery 的 $.Deferred。为 false 则使用 Promise
     alert: (msg) => {      // 全局性提示方法注册，可根据项目的 alert 组件进行注册
         console.trace(msg);
         // window.alert(msg);

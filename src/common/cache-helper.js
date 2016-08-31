@@ -132,3 +132,36 @@ export function isString(text) {
     }
     return false;
 }
+/**
+ * 返回包装done/fail API语法糖的 Promise
+ * @param  {Boolean} isJquery 是否为 jQuery，为true 则返回 $.Deferred
+ * @return {Promise}
+ */
+export function getPromise(isJquery) {
+    if (isJquery) {
+        return $.Deferred();
+    }
+
+    let resolve, reject;
+    const $p = new window.Promise((rs, rj) => {
+        resolve = rs;
+        reject = rj;
+    });
+
+    $p.resolve = resolve;
+    $p.reject = reject;
+
+    $p.done = function (cb) {
+        return $p.then(cb);
+    };
+
+    $p.fail = function (cb) {
+        return $p.then(null, cb);
+    };
+
+    $p.always = function (cb) {
+        return $p.then(cb, cb);
+    };
+
+    return $p;
+}

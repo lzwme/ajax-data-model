@@ -18,15 +18,17 @@
  * upsModel.get('appList', 'localStorage');
  *
  * @example
- * // 获取 task_type 数据，并缓存到 sessionStorage。获取时优先从 sessionStorage 读取
+ * // 获取 task_type 数据
  * DW.adm.get({
  *     url: upsModel.restapi.task_type,
- *     cache: 'sessionStorage',
- *     fromCache: 'sessionStorage',
- *     cacheName: 'task_dependType'
- * }).done((result) => {
+ *     cache: 'sessionStorage',     // 缓存到 sessionStorage
+ *     fromCache: 'sessionStorage', // 获取时优先从 sessionStorage 读取
+ *     cacheName: 'task_type' // 缓存、从缓存读取时使用的名称
+ * }).then((result) => {
  *     let taskTypeList = result.value || [];
  *     console.log(taskTypeList);
+ * }, (err) {
+ *     console.log(err);
  * });
  */
 'use strict';
@@ -34,7 +36,14 @@
 // import $ from 'jquery';
 
 import settings from './common/settings';
-import {getCacheStor, deleteCacheDataByName, getCacheDataByName, saveTOCache, isString} from './common/cache-helper';
+import {
+    getCacheStor,
+    deleteCacheDataByName,
+    getCacheDataByName,
+    saveTOCache,
+    isString,
+    getPromise
+} from './common/cache-helper';
 
 /**
  * ajax 请求通用方法
@@ -49,12 +58,15 @@ import {getCacheStor, deleteCacheDataByName, getCacheDataByName, saveTOCache, is
  * @param {Function} errCallback - ajax 请求失败或 code !== 200 时回调
  * @param {Object}   param - 传递给 ajax 请求的额外参数
  * @param {Function} fnCB - 请求到数据之后的立即回调方法，用于请求成功后需要前置处理的情况
- * @return {Object}  ajax - $.Deferred，用于自定义回调处理。注意：ajax 请求的 done/fail 回调，与 callback/errCallback 有区别，不会处理 code 是否为 200！
+ * @return {Promise}  用于自定义回调处理。
+ *                    注意：ajax 请求的 done/fail 回调，与 callback/errCallback 可能有区别，具体取决于 fnAjaxDone 与 fnAjaxFail 回调的实现
  */
 function requestAjax(config, callback, errCallback, fnCB) {
+    const $p = getPromise(settings.isJquery);
+
     if (!config.url || typeof config.url !== 'string') {
         console.trace('请求 URL API 不存在，或格式不对：', config.url);
-        return $.Deferred().reject('请求 URL API 不存在，或格式不对：', config.url);
+        return $p.reject('请求 URL API 不存在，或格式不对：', config.url);
     }
 
     // data.btnWaiting 的兼容，应使用 config.waiting 参数
@@ -80,26 +92,30 @@ function requestAjax(config, callback, errCallback, fnCB) {
         settings.fnBeforeAjax(config);
     }
 
-    let ajax = $.ajax($.extend(true, {
+    const ajax = $.ajax($.extend(true, {
         type: 'GET',
         dataType
     }, config.ajaxParam, {
         url: config.url,
         data: config.data
     })).done((result) => {
+        $p.resolve(result);
+
         return settings.fnAjaxDone(result, (res) => {
-            if ($.isFunction(fnCB)) {
+            if (fnCB instanceof Function) {
                 fnCB(result);
             }
 
-            if ($.isFunction(callback)) {
+            if (callback instanceof Function) {
                 callback(res);
             }
         }, errCallback, config);
     }).fail((err) => {
+        $p.reject(err);
+
         settings.fnAjaxFail(err, config);
 
-        if ($.isFunction(errCallback)) {
+        if (errCallback instanceof Function) {
             errCallback(err);
         }
     }).always(() => {
@@ -108,7 +124,8 @@ function requestAjax(config, callback, errCallback, fnCB) {
         }
     });
 
-    return ajax; // 返回 Promise 对象
+    return ajax;
+    // return $p;
 }
 
 /**
@@ -142,7 +159,8 @@ export default {
             return undefined;
         }
 
-        let cacheName, cacheData, $promise = $.Deferred();
+        let cacheName, cacheData;
+        const $promise = getPromise(settings.isJquery);
 
         if (isString(config)) {
             // 第一个参数为字符串，则为名称，直接返回对应值
@@ -156,7 +174,7 @@ export default {
 
             // fromCache 为 true，尝试从缓存中获取数据
             if (config.fromCache && cacheData) {
-                if ($.isFunction(callback)) {
+                if (callback instanceof Function) {
                     callback(cacheData);
                 }
 
@@ -185,7 +203,7 @@ export default {
             }
             cacheData = getCacheDataByName(cacheName, config.fromCache || callback);
 
-            if ($.isFunction(callback)) {
+            if (callback instanceof Function) {
                 callback(cacheData);
             }
 
@@ -211,11 +229,12 @@ export default {
             return '';
         }
 
-        let cacheName, cacheData, $promise = $.Deferred();
+        let cacheName, cacheData;
+        const $promise = getPromise(settings.isJquery);
 
         if (isString(config)) { // config 为字符串，则作为cacheName
             cacheName = '' + config;
-            if ($.isFunction(callback)) { // 可以存储为回调方法执行后的结果
+            if (callback instanceof Function) { // 可以存储为回调方法执行后的结果
                 saveTOCache(cacheName, callback(), errCallback);
             } else {
                 saveTOCache(cacheName, callback, errCallback);
@@ -239,7 +258,7 @@ export default {
         } else if (config.cacheName) { // 没有设置 url，但设置了 cacheName，则保存数据到本地
             saveTOCache(config.cacheName, config.data, config.cache);
 
-            if ($.isFunction(callback)) {
+            if (callback instanceof Function) {
                 callback(cacheData);
             }
         }
@@ -262,8 +281,8 @@ export default {
             return '';
         }
 
-        let $promise = $.Deferred(),
-            cacheName;
+        const $promise = getPromise(settings.isJquery);
+        let cacheName;
 
         if (isString(config) || config instanceof RegExp) {
             // 第一个参数为字符串或正则，callback 就是 cacheType
@@ -325,11 +344,11 @@ export default {
      * @param  {Object}  data        要传递的参数，可省略
      * @param  {Function} callback    成功回调
      * @param  {Function}   errCallback 失败回调
-     * @returns {Deferred} $.Deferred
+     * @returns {Promise}
      */
     getJSON(url, data = {}, callback, errCallback) {
         // data 参数可以省略
-        if ($.isFunction(data)) {
+        if (data instanceof Function) {
             errCallback = callback;
             callback = data;
         }
@@ -346,7 +365,7 @@ export default {
      * @param  {Object}  data        要传递的参数
      * @param  {Function} callback    成功回调
      * @param  {Function}   errCallback 失败回调
-     * @returns {Deferred} $.Deferred
+     * @returns {Promise}
      */
     post(url, data, callback, errCallback) {
         return this.save({
