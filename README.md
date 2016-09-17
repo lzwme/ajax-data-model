@@ -1,8 +1,6 @@
 # Ajax-Data-Model
 
 [![NPM version][npm-image]][npm-url]
-[![Build status][travis-image]][travis-url]
-[![Test coverage][coveralls-image]][coveralls-url]
 [![Dependency Status][david-image]][david-url]
 [![License][license-image]][license-url]
 [![Downloads][downloads-image]][downloads-url]
@@ -13,9 +11,8 @@ ajax 通用数据请求处理模型。在 ajax 请求的生命周期过程中，
 
 * umd 支持
 * memory/sessionStorage/localStorage 级数据缓存支持
-* 请求前后的按钮状态处理
-* 基于接口约定的通用回调处理
 * Promise thenable 风格的 API 调用
+* 基于接口约定的通用回调处理支持(通用错误处理、loading 状态、通用参数、埋点上报<接口超时、接口错误、接口异常、数据埋点等>...)
 
 ## 快速开始
 
@@ -99,7 +96,9 @@ adm.get({url: '/xxx'}).then((result) => {
 
 ## License
 
-  MIT
+ajax-data-model is released under the MIT license.
+
+该插件由[志文工作室](http://lzw.me)开发和维护。
 
 [npm-image]: https://img.shields.io/npm/v/ajax-data-model.svg?style=flat-square
 [npm-url]: https://npmjs.org/package/ajax-data-model
