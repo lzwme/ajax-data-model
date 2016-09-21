@@ -87,9 +87,18 @@ function requestAjax(config, callback, errCallback, fnCB) {
         dataType = 'jsonp';
     }
 
-    // 请求前回调
+    // 请求前回调，可以引用方式修改 config
     if (settings.fnBeforeAjax) {
         settings.fnBeforeAjax(config);
+    }
+
+    // 格式化 config.data
+    if ('object' === typeof config.data) {
+        for (let item in config.data) {
+            if ('string' !== typeof config.data[item]) {
+                config.data[item] = JSON.stringify(config.data[item]);
+            }
+        }
     }
 
     const ajax = $.ajax($.extend(true, {

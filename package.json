@@ -1,6 +1,6 @@
 {
   "name": "ajax-data-model",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "ajax data model, ajax 通用数据请求处理",
   "main": "lib/adm.jquery.js",
   "browser": "lib/adm.jquery.min.js",
