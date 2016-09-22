@@ -8,6 +8,7 @@ const Router = require('koa-router');
 const router = new Router();
 const serve = require('koa-static');
 const fs = require('fs');
+const port = process.env.PORT || 3131;
 
 app.use(serve('./'));
 
@@ -39,6 +40,15 @@ app
   .use(router.routes())
   .use(router.allowedMethods());
 
-app.listen(3011, () => {
-    console.log('listen port 3011.');
+app.listen(port, () => {
+    var child = require('child_process');
+    var open = 'open';
+
+    console.log('listen port ' + port);
+    // process.platform: 'darwin', 'freebsd', 'linux', 'sunos' or 'win32'
+    if (process.platform === 'win32') {
+        open = 'start';
+    }
+
+    child.exec(open + ' http://127.0.0.1:' + port);
 });

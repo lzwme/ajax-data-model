@@ -37,7 +37,7 @@ npm i --save ajax-data-model
 import $ from 'jquery';
 import adm from 'ajax-data-model';
 // 全局性设置
-adm.setSettings({...}); 
+adm.setSettings({...});
 
 adm.restapi = {
   userlist: '/rest/user/list'
@@ -82,7 +82,7 @@ adm.get({url: '/xxx'}).then((result) => {
 
 ## 命令脚本与二次开发
 
-* `npm start` - 开启 `3001` 端口 web 服务，进行测试开发。
+* `npm start` - 开启 `3131` 端口 web 服务，进行测试开发。
 * `npm run dev` - 开启开发监听模式，监听 `src` 目录。
 * `npm test` - `mocha + chai` 测试(需先执行 `npm start`)。
 * `npm run build` - 构建生产环境使用源码 (mini) 到 `lib` 目录。

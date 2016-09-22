@@ -198,7 +198,7 @@ export default {
 
             return requestAjax(config, callback, errCallback, (result) => {
                 // cache 为 true，缓存数据
-                if (config.cache && Number(result.code) === 200) {
+                if (config.cache) {
                     this.save(cacheName, result, config.cache);
                 }
             });
@@ -249,18 +249,30 @@ export default {
                 saveTOCache(cacheName, callback, errCallback);
             }
         } else if (config.url) { // 配置了 url，将数据存储到远程
+            cacheName = config.cacheName || config.url;
+            cacheData = getCacheDataByName(cacheName, config.fromCache);
+
+            // fromCache 为 true，尝试从缓存中获取数据
+            if (config.fromCache && cacheData) {
+                if (callback instanceof Function) {
+                    callback(cacheData);
+                }
+
+                $promise.resolve(cacheData);
+                // return cacheData; // 返回数据
+                return $promise; // 这里改了后不兼容旧的调用，应该注意 bug 的出现！
+            }
+
             config.ajaxParam = $.extend({
                 type: 'POST'
             }, config.ajaxParam);
 
             return requestAjax(config, callback, errCallback, (result) => {
                 if (config.cache) {
-                    cacheName = cacheName || config.url;
                     // 远程存储成功了，本地也需缓存数据时
                     saveTOCache(cacheName, result, config.cache);
                 }
             });
-
         } else if (config.hasOwnProperty('url')) { // 配置了url，但 url 值为空
             console.trace('配置了 URL 参数，但值为空：', config);
             $promise.reject('配置了 URL 参数，但值为空', config);
