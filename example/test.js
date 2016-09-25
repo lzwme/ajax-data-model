@@ -24,64 +24,64 @@ function eqeq(v1, v2) {
 // 普通的 ajax 请求
 adm.get({
     url: '/rest/user'
-}).done((result) => {
+}).done(function (result) {
     console.log(result.value);
     showMsg('普通的 ajax 请求(/rest/user): ', result.value);
-}).then(() => {
+}).then(function () {
     // code !== 200 的 ajax 请求
     return adm.get({
         url: '/rest/user/xxx'
     });
-}).done((result) => {
-    showMsg('code !== 200 的 ajax 请求(/rest/user/xxx): ', result);
-}).then(() => {
+}).then(function (result) {}, function (result) {
+    return showMsg('code !== 200 的 ajax 请求(/rest/user/xxx): ', result);
+}).then(function () {
     // 缓存到内存
     return adm.get({
         url: '/rest/user',
         cache: true,
         fromCache: true
     });
-}).then((result) => {
+}).then(function (result) {
     console.log(result);
 
     // 从内存读取
-    let cache = adm.get('/rest/user');
+    var cache = adm.get('/rest/user');
 
     showMsg('从内存读取：', cache);
     showMsg('从内存读取与 url 获取值一致：', eqeq(result, cache));
-}).then(() => {
+}).then(function () {
     // 缓存到 sessionStorage
     return adm.get({
         url: '/rest/user',
         cache: 'sessionStorage'
     });
-}).then((result) => {
+}).then(function (result) {
     console.log(result);
 
-    let cache = adm.get('/rest/user', 'sessionStorage');
+    var cache = adm.get('/rest/user', 'sessionStorage');
 
     showMsg('从 sessionStorage 读取：', cache);
     showMsg('从 sessionStorage 读取与 url 获取值一致：', eqeq(result, cache));
-}).then(() => {
+}).then(function () {
     // 缓存到 localStorage
     return adm.get({
         url: '/rest/user',
         cache: 'localStorage'
     });
-}).then((result) => {
+}).then(function (result) {
     console.log(result);
 
-    let cache = adm.get('/rest/user', 'localStorage');
+    var cache = adm.get('/rest/user', 'localStorage');
 
     showMsg('从 localStorage 读取：', cache);
     showMsg('从 localStorage 读取与 url 获取值一致：', eqeq(result, cache));
-}).then(() => {
+}).then(function () {
     // 普通的缓存数据到 sessionStorage
-    let data = {a: 1, b: 2};
+    var data = {a: 1, b: 2};
 
     adm.save('testdata', data, 'sessionStorage');
 
-    let cache = adm.get('testdata', 'sessionStorage');
+    var cache = adm.get('testdata', 'sessionStorage');
 
     showMsg('普通的缓存数据到 sessionStorage，读取值：', cache, eqeq(cache, data));
 });

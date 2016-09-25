@@ -25,7 +25,8 @@
         "chai": true,
         "adm": true,
         "ava": true,
-        "test": true
+        "test": true,
+        "$": true
     },
 
     "parser": "babel-eslint",

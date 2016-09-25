@@ -18,7 +18,7 @@ ajax 通用数据请求处理模型。在 ajax 请求的生命周期过程中，
 
 ### 下载安装
 
-手动下载：到代码仓库下载 release 的 zip 包即可。
+手动下载：到代码仓库下载 [release](https://github.com/lzwme/ajax-data-model/releases) 的 zip 包，取得 `dist` 目录内文件即可。
 
 npm 方式：
 

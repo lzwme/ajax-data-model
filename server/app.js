@@ -11,6 +11,7 @@ const fs = require('fs');
 const port = process.env.PORT || 3131;
 
 app.use(serve('./'));
+app.use(serve('example/'));
 
 router.get('/', function (ctx, next) {
     ctx.body = fs.readFileSync('./example/index.html', 'utf8');
@@ -41,8 +42,8 @@ app
   .use(router.allowedMethods());
 
 app.listen(port, () => {
-    var child = require('child_process');
-    var open = 'open';
+    const child = require('child_process');
+    let open = 'open';
 
     console.log('listen port ' + port);
     // process.platform: 'darwin', 'freebsd', 'linux', 'sunos' or 'win32'

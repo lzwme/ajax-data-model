@@ -3,7 +3,7 @@
  * 提供数据的读取、保存/缓存、删除、更新等操作。各模块 model 可继承该模型，以进行模块范围内的数据存取操作。
  * @module adm
  * @author lizhiwen@meizu.com
- * @since 2016-03-31 - 2016-08-16
+ * @since 2016-03-31 - 2016-09-25
  *
  * @example
  * import adm from 'ajax-data-model';
@@ -19,7 +19,7 @@
  *
  * @example
  * // 获取 task_type 数据
- * DW.adm.get({
+ * adm.get({
  *     url: upsModel.restapi.task_type,
  *     cache: 'sessionStorage',     // 缓存到 sessionStorage
  *     fromCache: 'sessionStorage', // 获取时优先从 sessionStorage 读取
@@ -53,7 +53,7 @@ import {
  * @param {Object}   config.data - ajax 请求的参数
  * @param {Object}   config.waiting - 用于传递给 settings.fnWaiting 方法使用的参数配置
  * @param {Object}   config.tipConfig[true] - ajax 出错时的提示配置。配置为 false 时，禁用全局的系统提示，包括 成功/出错/404/50x 等
- * @param {Object}   config.errAlert[true] - ajax error 时是否给出全局提示
+ * @param {Object}   config.errAlert[true] - ajax error 时是否给出提示
  * @param {Function} callback - ajax 请求成功时回调
  * @param {Function} errCallback - ajax 请求失败或 code !== 200 时回调
  * @param {Object}   param - 传递给 ajax 请求的额外参数
@@ -73,11 +73,6 @@ function requestAjax(config, callback, errCallback, fnCB) {
     if (config.data && config.data.btnWaiting) {
         config.waiting = config.waiting || config.data.btnWaiting;
         delete config.data.btnWaiting;
-    }
-
-    // ajax 请求前处理
-    if (config.waiting) {
-        settings.fnWaiting(config.waiting);
     }
 
     // jsonp 兼容
@@ -101,16 +96,19 @@ function requestAjax(config, callback, errCallback, fnCB) {
         }
     }
 
-    const ajax = $.ajax($.extend(true, {
+    // ajax 请求前处理，与请求后处理呼应
+    settings.fnWaiting(config.waiting);
+
+    const startTime = new Date();
+
+    return $.ajax($.extend(true, {
         type: 'GET',
         dataType
     }, config.ajaxParam, {
         url: config.url,
         data: config.data
-    })).done((result) => {
-        $p.resolve(result);
-
-        return settings.fnAjaxDone(result, (res) => {
+    })).then((result) => {
+        const success = settings.fnAjaxDone(result, (res) => {
             if (fnCB instanceof Function) {
                 fnCB(result);
             }
@@ -119,21 +117,39 @@ function requestAjax(config, callback, errCallback, fnCB) {
                 callback(res);
             }
         }, errCallback, config);
-    }).fail((err) => {
-        $p.reject(err);
 
+        // 为 false，设为失败回调
+        if (!success) {
+            return $p.reject(result);
+        }
+
+        // 为 true
+        if (true === success) {
+            return $p.resolve(result);
+        }
+
+        // 为 Promise 风格回调
+        if ('function' === typeof success.then) {
+            // $p = success;
+            // return $p;
+            return success;
+        }
+
+        // 为其它类型，返回 success 内容
+        return $p.resolve(success);
+    }, (err) => {
         settings.fnAjaxFail(err, config);
 
         if (errCallback instanceof Function) {
             errCallback(err);
         }
+
+        return $p.reject(err);
     }).always(() => {
-        if (config.waiting) {
-            settings.fnWaiting(config.waiting, true);
-        }
+        // ajax 完成后处理
+        settings.fnWaiting(config.waiting, new Date() - startTime);
     });
 
-    return ajax;
     // return $p;
 }
 

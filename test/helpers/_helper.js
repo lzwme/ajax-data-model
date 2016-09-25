@@ -8,7 +8,8 @@ import jsdom from 'mocha-jsdom';
 import fs from 'fs';
 
 jsdom({
-    url: 'http://localhost:3131/',
+    url: 'http://127.0.0.1:3131',
+    skipWindowCheck: true,
     html: undefined,
     src: fs.readFileSync('./node_modules/jquery/dist/jquery.js', 'utf-8')
 });

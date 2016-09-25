@@ -1,6 +1,6 @@
 {
   "name": "ajax-data-model",
-  "version": "0.0.4",
+  "version": "0.0.6",
   "description": "ajax data model, ajax 通用数据请求处理",
   "main": "lib/adm.jquery.js",
   "browser": "lib/adm.jquery.min.js",
@@ -28,6 +28,7 @@
     "eslint-loader": "^1.1.0",
     "ink-docstrap": "^1.2.1",
     "jsdoc": "^3.4.0",
+    "jsdom": "^9.5.0",
     "koa": "^2.0.0-alpha.5",
     "koa-router": "^7.0.1",
     "koa-static": "^3.0.0",
