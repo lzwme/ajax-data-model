@@ -450,7 +450,7 @@ export default {
 
         for (item in setting) {
             if ('cachePrefix' === item) {
-                this.setCachePrefix(setting[item], true);
+                this.setCachePrefix(setting[item], false);
             } else if (settings.hasOwnProperty(item)) {
                 settings[item] = setting[item];
             }
