@@ -56,7 +56,7 @@
         "default-case": 0,
         "dot-location": [2, "property"],
         "dot-notation": 0,
-        "eol-last": 2,
+        "eol-last": 0,
         "eqeqeq": [2, "allow-null"],
         "func-names": 0,
         "func-style": 0,

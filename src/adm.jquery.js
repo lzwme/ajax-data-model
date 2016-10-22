@@ -78,7 +78,7 @@ function requestAjax(config, callback, errCallback, fnCB) {
     // jsonp 兼容
     let dataType = 'json';
 
-    if (/^https?:\/\// .test(config.url) && config.url.search(window.location.host) === -1) {
+    if (/^https?:\/\//.test(config.url) && config.url.search(window.location.host) === -1) {
         dataType = 'jsonp';
     }
 
@@ -97,7 +97,7 @@ function requestAjax(config, callback, errCallback, fnCB) {
     }
 
     // ajax 请求前处理，与请求后处理呼应
-    settings.fnWaiting(config.waiting);
+    settings.fnWaiting(config);
 
     const startTime = new Date();
 
@@ -147,7 +147,7 @@ function requestAjax(config, callback, errCallback, fnCB) {
         return $p.reject(err);
     }).always(() => {
         // ajax 完成后处理
-        settings.fnWaiting(config.waiting, new Date() - startTime);
+        settings.fnWaiting(config, new Date() - startTime);
     });
 
     // return $p;

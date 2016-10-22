@@ -5,9 +5,9 @@
  */
 export default {
     cachePrefix: '__DM__', // 缓存数据时使用的前缀，用于区别普通数据
-    isJquery: true,        // 是否使用 jQuery 的 $.Deferred。为 false 则使用 Promise
-    errAlert: true,        // ajax 出错时是否全局提示，fnAjaxFail 中使用。全局性开关
-    alert: (msg) => {      // 全局性提示方法注册，可根据项目的 alert 组件进行注册
+    isJquery: true, // 是否使用 jQuery 的 $.Deferred。为 false 则使用 Promise
+    errAlert: true, // ajax 出错时是否全局提示，fnAjaxFail 中使用。全局性开关
+    alert: (msg) => { // 全局性提示方法注册，可根据项目的 alert 组件进行注册
         console.trace(msg);
         // window.alert(msg);
     },
@@ -15,11 +15,12 @@ export default {
      * ajax 开始/结束时回调方法
      * 例如单击按钮后，在开始时禁用按钮，结束时恢复它；
      * 再例如，在 ajax 开始时启用页面动画，结束时关闭页面动画。
-     * @param  {Object}  waiting - 来自于 `data.waiting` 参数，参数内容可根据 `fnWaiting` 具体的处理来设置
+     * @param  {Object}  config.waiting - 参数内容可根据 `fnWaiting` 具体的处理来设置
      * @param  {Number} time - 存在值时在 ajax 结束调用，值为 ajax 消耗的时间；省略时在 ajax 开始前被调用
      * @return {void}
      */
-    fnWaiting(waiting, time) {
+    fnWaiting(config, time) {
+        // const waiting = config.waiting;
         // if ('development' === process.env.NODE_ENV && time) {
         //     console.trace('ajax 请求消耗时间：', time);
         // }

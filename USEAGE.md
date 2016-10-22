@@ -24,15 +24,23 @@ adm.setSettings({
      * ajax 开始/结束时的状态处理
      * 例如单击按钮后，在开始时禁用按钮，结束时恢复它；
      * 再例如，在 ajax 开始时启用页面动画，结束时关闭页面动画。
-     * @param  {Object}  waiting - 来自于 `data.waiting` 参数，参数内容可根据 `fnWaiting` 具体的处理来设置。例如这里为：
+     * @param  {Object}  config.waiting - 参数内容可根据 `fnWaiting` 具体的处理来设置。例如这里为：
      * `{$btn:$btn, text:"请求中..", defaultText: "提交"}`
      * @param  {Number} time - 存在值时在 ajax 结束调用，值为 ajax 消耗的时间；省略时在 ajax 开始调用
      * @return {void}
      */
-    fnWaiting(waiting, time) {
+    fnWaiting(config, time) {
+        const waiting = config.waiting;
+
         if ('development' === process.env.NODE_ENV && time) {
            console.trace('ajax 请求消耗时间：', time);
         }
+
+        // 超长请求耗时的日志上报...
+        // if (time > config.timeout || 5000) {
+        //     // 启动 api 上报...
+        //     MZBH('ajax_long_time', time, config.url);
+        // }
 
         // 示例：根据 time 区分 ajax 开始与结束，分别做不同的处理
         // 这里以处理按钮状态为例，waiting 参数则为关键: {$btn, text, defaultText}
@@ -45,7 +53,7 @@ adm.setSettings({
                 .html(waiting.text || '<i class="fa fa-spinner fa-spin"></i> 请求中...')
                 .addClass('disabled').prop('disabled', true);
         } else {
-            setTimeout(function () { 
+            setTimeout(function () {
                 // 连续提交延时处理，两次连续提交不能超过 200 ms
                 waiting.$btn.html(waiting.defaultText || waiting.$btn.data('defaultText'))
                     .removeClass('disabled').prop('disabled', false);
