@@ -5,14 +5,14 @@
 [![License][license-image]][license-url]
 [![Downloads][downloads-image]][downloads-url]
 
-ajax 通用数据请求处理模型。在 ajax 请求的生命周期过程中，处理通用的约定行为操作。
+ajax 数据请求模型封装。在 ajax 请求的生命周期过程中，实现基于项目约定的通用行为操作。
 
 ## 特性
 
 * umd 支持
 * memory/sessionStorage/localStorage 级数据缓存支持
 * Promise thenable 风格的 API 调用
-* 基于接口约定的通用回调处理支持(通用错误处理、loading 状态、通用参数、埋点上报<接口超时、接口错误、接口异常、数据埋点等>...)
+* 基于接口约定的通用回调处理
 
 ## 快速开始
 
@@ -60,21 +60,21 @@ adm.get({url: '/xxx'}).then((result) => {
 
 **直接引用使用：**
 
-1. 引入 jquery 和 js
+1) 引入 jquery 和 adm 的 js 文件
 
 ```javascript
 <script src="lib/jquery/juqery.min.js"></script>
 <script src="lib/ajax-data-model/adm.jquery.min.js"></script>
 ```
 
-2. 使用
+2) 使用
 
 ```javascript
 <script>
   // 全局性设置
-  adm.setSettings({...});
+  window.adm.setSettings({...});
   // 使用
-  adm.get({url: '/xxx'}).then((result) => {
+  window.adm.get({url: '/xxx'}).then((result) => {
     console.log(result);
   });
 </script>

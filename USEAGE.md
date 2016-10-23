@@ -223,7 +223,7 @@ adm.delete(param.url, 'localStorage');
 * `data` 参数
 
 ```javascript
-let param = {
+const param = {
     url: '/rest/user',
     data: {
         userId: 22
@@ -240,7 +240,7 @@ adm.get(param).then((result) => {}, (err) => {});
 save 方法使用 `POST` 方式提交。示例：
 
 ```javascript
-let param = {
+const param = {
     url: '/rest/save/user',
     data: {
         userId: 22,
@@ -261,7 +261,7 @@ adm.save(param).then((result) => {}, (err) => {});
 无 ajax 的数据读写删
 
 ```javascript
-let data = {
+const data = {
     user: 'renxia',
     site: 'https://lzw.me'
 };
