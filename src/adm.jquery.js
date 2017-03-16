@@ -88,8 +88,10 @@ function requestAjax(config, callback, errCallback, fnCB) {
     }
 
     // 格式化 config.data
+    let item;
+
     if ('object' === typeof config.data) {
-        for (let item in config.data) {
+        for (item in config.data) {
             if ('string' !== typeof config.data[item]) {
                 config.data[item] = JSON.stringify(config.data[item]);
             }
@@ -353,9 +355,11 @@ export default {
      * @return {Object}
      */
     getAll(cacheType) {
-        let cacheStor = getCacheStor(cacheType);
-        let item, key, _cache = {};
-        let i, len = cacheStor.length;
+        const cacheStor = getCacheStor(cacheType);
+        const _cache = {};
+        const len = cacheStor.length;
+        let i;
+        let item, key;
 
         for (i = 0; i < len; i++) {
             item = cacheStor.key(i);

@@ -45,7 +45,8 @@ export function getCacheStor(cacheType) {
  * @return {*}                  返回读取到的数据
  */
 export function getCacheDataByName(cacheName, cacheType) {
-    let data, cacheStor = getCacheStor(cacheType);
+    let data;
+    const cacheStor = getCacheStor(cacheType);
 
     if (!(cacheName = adjustCacheName(cacheName))) {
         return data;
@@ -66,8 +67,8 @@ export function getCacheDataByName(cacheName, cacheType) {
  * @return {*}
  */
 export function deleteCacheDataByName(cacheName, cacheType) {
+    const cacheStor = getCacheStor(cacheType);
     let item,
-        cacheStor = getCacheStor(cacheType),
         i,
         len;
 
@@ -125,7 +126,7 @@ export function saveTOCache(cacheName, data, cacheType) {
  * 是否为类字符串
  */
 export function isString(text) {
-    let type = typeof text;
+    const type = typeof text;
 
     if ('string' === type || 'number' === type) {
         return true;

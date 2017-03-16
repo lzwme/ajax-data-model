@@ -7,6 +7,7 @@ export default {
     cachePrefix: '__DM__', // 缓存数据时使用的前缀，用于区别普通数据
     isJquery: true, // 是否使用 jQuery 的 $.Deferred。为 false 则使用 Promise
     errAlert: true, // ajax 出错时是否全局提示，fnAjaxFail 中使用。全局性开关
+    errMsg: '',     // 系统错误(40x/50x)时的提示信息，为空则使用 err.responseText
     alert: (msg) => { // 全局性提示方法注册，可根据项目的 alert 组件进行注册
         console.trace(msg);
         // window.alert(msg);
@@ -76,12 +77,18 @@ export default {
      * @return {void}
      */
     fnAjaxFail(err, config) {
+        let msg = err.responseText || err.statusText || '';
+
+        if (msg.length > 300) {
+            msg = msg.slice(0, 300) + '...';
+        }
+
         if (0 === err.status) {
             this.alert('登录超时');
             // window.location.reload();
         } else if (config.errAlert || undefined === config.errAlert && this.errAlert) {
-            // errAlert = false 时禁止 40x/50x 等错误的全局提示，可全局禁止，或本次禁止
-            this.alert('数据请求失败: ' + (err.responseText || err.statusText));
+            // errAlert = false 时禁止 40x/50x 等错误的全局提示
+            this.alert(config.errMsg || this.errMsg || ('数据请求失败: ' + msg));
         }
     }
 };
