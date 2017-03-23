@@ -107,15 +107,15 @@ ajax-data-model is released under the MIT license.
 
 [npm-image]: https://img.shields.io/npm/v/ajax-data-model.svg?style=flat-square
 [npm-url]: https://npmjs.org/package/ajax-data-model
-[github-tag]: http://img.shields.io/github/tag/lzwme/ajax-data-model.svg?style=flat-square
+[github-tag]: https://img.shields.io/github/tag/lzwme/ajax-data-model.svg?style=flat-square
 [github-url]: https://github.com/lzwme/ajax-data-model/tags
 [travis-image]: https://img.shields.io/travis/lzwme/ajax-data-model.svg?style=flat-square
 [travis-url]: https://travis-ci.org/lzwme/ajax-data-model
 [coveralls-image]: https://img.shields.io/coveralls/lzwme/ajax-data-model.svg?style=flat-square
 [coveralls-url]: https://coveralls.io/r/lzwme/ajax-data-model?branch=master
-[david-image]: http://img.shields.io/david/lzwme/ajax-data-model.svg?style=flat-square
+[david-image]: https://img.shields.io/david/lzwme/ajax-data-model.svg?style=flat-square
 [david-url]: https://david-dm.org/lzwme/ajax-data-model
-[license-image]: http://img.shields.io/npm/l/ajax-data-model.svg?style=flat-square
+[license-image]: https://img.shields.io/npm/l/ajax-data-model.svg?style=flat-square
 [license-url]: LICENSE
-[downloads-image]: http://img.shields.io/npm/dm/ajax-data-model.svg?style=flat-square
+[downloads-image]: https://img.shields.io/npm/dm/ajax-data-model.svg?style=flat-square
 [downloads-url]: https://npmjs.org/package/ajax-data-model
