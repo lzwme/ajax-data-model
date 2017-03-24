@@ -103,7 +103,7 @@ adm.get({url: '/xxx'}).then((result) => {
 
 ajax-data-model is released under the MIT license.
 
-该插件由[志文工作室](http://lzw.me)开发和维护。
+该插件由[志文工作室](https://lzw.me)开发和维护。
 
 [npm-image]: https://img.shields.io/npm/v/ajax-data-model.svg?style=flat-square
 [npm-url]: https://npmjs.org/package/ajax-data-model
