@@ -7,6 +7,11 @@ import DataCache from './DataCache';
 // 缓存数据对象。为了避免混淆，只缓存至一级结构
 const dataCache = new DataCache();
 
+// 获取时间戳
+function getTime(t) {
+    return t ? t.getTime() : (new Date()).getTime();
+}
+
 /**
  * 修正 cacheName
  * @param  {String} cacheName 原始的值，可能是任意格式
@@ -32,7 +37,7 @@ function adjustCacheName(cacheName) {
 export function getCacheStor(cacheType) {
     let cacheStor = dataCache;
 
-    if ('sessionStorage' === cacheType || 'localStorage' === cacheType) {
+    if (~['sessionStorage', 'localStorage'].indexOf(cacheType)) {
         cacheStor = window[cacheType] || cacheStor;
     }
 
@@ -46,6 +51,7 @@ export function getCacheStor(cacheType) {
  */
 export function getCacheDataByName(cacheName, cacheType) {
     let data;
+    const undefinedVal = void 0;
     const cacheStor = getCacheStor(cacheType);
 
     if (!(cacheName = adjustCacheName(cacheName))) {
@@ -58,7 +64,17 @@ export function getCacheDataByName(cacheName, cacheType) {
         data = cacheStor.getItem(cacheName);
     }
 
-    return data || undefined;
+    // 缓存的数据设置了有效期 data._e
+    if (data && data._e) {
+        // console.log(getTime() - data._e, getTime(), data._e);
+
+        if (getTime() - data._e < 0) {
+            return data.d;
+        }
+        return undefinedVal;
+    }
+
+    return data || undefinedVal;
 }
 /**
  * 根据 cacheName 名称尝试移除缓存中存在的数据
@@ -107,12 +123,23 @@ export function deleteCacheDataByName(cacheName, cacheType) {
  * @param {*}      data - 任意类型的数据
  * @param {String} cacheType - 存储类型，支持三种方式：sessionStorage、localStorage 和内存中(默认)
  */
-export function saveTOCache(cacheName, data, cacheType) {
+export function saveTOCache(cacheName, data, cfg = {}) {
     if (!(cacheName = adjustCacheName(cacheName))) {
         return;
     }
 
+    console.log(cacheName, data, cfg);
+
+    const {cache: cacheType, expires} = cfg;
     const cacheStor = getCacheStor(cacheType);
+
+    // expires 应为毫秒整数
+    if (+expires) {
+        data = {
+            d: data,
+            _e: (typeof expires === 'object' && expires.getTime) ? getTime(expires) : (getTime() + expires)
+        };
+    }
 
     if (cacheStor === dataCache) {
         // 存到内存 dataCache

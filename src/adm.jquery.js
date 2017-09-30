@@ -23,7 +23,8 @@
  *     url: upsModel.restapi.task_type,
  *     cache: 'sessionStorage',     // 缓存到 sessionStorage
  *     fromCache: 'sessionStorage', // 获取时优先从 sessionStorage 读取
- *     cacheName: 'task_type' // 缓存、从缓存读取时使用的名称
+ *     cacheName: 'task_type', // 缓存、从缓存读取时使用的名称
+ *     expires: 1000 * 60 * 5, // 数据有效时间为 5 分钟
  * }).then((result) => {
  *     let taskTypeList = result.value || [];
  *     console.log(taskTypeList);
@@ -170,7 +171,8 @@ export default {
      *     data: {},         // url 请求参数
      *     cache: false,     // 配置了 url 获取数据时，是否缓存数据。可取值：`false/true/sessionStorage/localStorage`
      *     fromCache: false, // 配置了 url，是否首先尝试从缓存中读取数据。可取值：`false/true/sessionStorage/localStorage`
-     *     cacheName: 'ddd', // 配置了 url，如果缓存数据，配置其名称，不配置则取值 url (/ 替换为 . 作为深度路径)
+     *     cacheName: '',    // 配置了 url，如果缓存数据，配置其名称，不配置则取值 url (/ 替换为 . 作为深度路径)
+     *     expires: 0,       // 如果缓存数据，设置缓存数据的有效期，可为 毫秒数，或 Date 类型日期
      *     tipConfig: {delay: 2000} // ajax 出错时的提示配置。配置为 false 时，禁用全局的系统提示，包括 成功/出错/404/50x 等
      *     errAlert: true    // ajax error 时是否给出全局提示
      *     waiting: {}       // 按钮等待等配置，用于传递给 settings.fnWaiting 方法
@@ -201,7 +203,7 @@ export default {
 
             // fromCache 为 true，尝试从缓存中获取数据
             if (config.fromCache && cacheData) {
-                if (callback instanceof Function) {
+                if (typeof callback === 'function') {
                     callback(cacheData);
                 }
 
@@ -217,7 +219,7 @@ export default {
             return requestAjax(config, callback, errCallback, (result) => {
                 // cache 为 true，缓存数据
                 if (config.cache) {
-                    this.save(cacheName, result, config.cache);
+                    this.save(cacheName, result, config);
                 }
             });
         } else if (config.hasOwnProperty('url')) { // 配置了 url，但 url 值为空
@@ -243,7 +245,7 @@ export default {
      * 设置/存储数据
      * @param {Object|String} config - 配置信息。也可以为字符串，则为需存储的数据名称。与 {@link module:adm~get} 的 config 参数相同
      * @param {Function|Object} callback - 存储成功后回调方法。当 config 为字符串时，为需存储的数据，或方法执行后返回要存储的数据
-     * @param {Function|String} errCallback - 从 url 获取时，失败后需要做一些处理的回调方法。config 为字符串时，为 cacheType 类型
+     * @param {Function|String} errCallback - 从 url 获取时，失败后需要做一些处理的回调方法。config 为字符串时，为配置信息，如 {cacheType, expires}
      * @example
      * // 存储数据到 localStorage，名称为 testdataName
      * adm.save('testdataName', {test: 1}, 'localStorage');
@@ -266,6 +268,7 @@ export default {
             } else {
                 saveTOCache(cacheName, callback, errCallback);
             }
+            $promise.resolve(cacheName);
         } else if (config.url) { // 配置了 url，将数据存储到远程
             cacheName = config.cacheName || config.url;
             cacheData = getCacheDataByName(cacheName, config.fromCache);
@@ -288,18 +291,19 @@ export default {
             return requestAjax(config, callback, errCallback, (result) => {
                 if (config.cache) {
                     // 远程存储成功了，本地也需缓存数据时
-                    saveTOCache(cacheName, result, config.cache);
+                    saveTOCache(cacheName, result, config);
                 }
             });
         } else if (config.hasOwnProperty('url')) { // 配置了url，但 url 值为空
             console.trace('配置了 URL 参数，但值为空：', config);
             $promise.reject('配置了 URL 参数，但值为空', config);
         } else if (config.cacheName) { // 没有设置 url，但设置了 cacheName，则保存数据到本地
-            saveTOCache(config.cacheName, config.data, config.cache);
+            saveTOCache(config.cacheName, config.data, config);
 
             if (callback instanceof Function) {
                 callback(cacheData);
             }
+            $promise.resolve(config.data);
         }
 
         return $promise;
