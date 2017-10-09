@@ -23,7 +23,9 @@ function showMsg() {
 }
 
 function eqeq(v1, v2) {
-    return JSON.stringify(v1) === JSON.stringify(v2);
+    return JSON.stringify(v1) === JSON.stringify(v2) ?
+        '<font color="green">true</font>' :
+        '<font color="red">false</font>';
 }
 
 function doRun() {

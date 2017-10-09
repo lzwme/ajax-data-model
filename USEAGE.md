@@ -296,7 +296,7 @@ cache = adm.get('user_renxia');
 console.log('从内存读取(user_renxia): ', cache); // undefined
 ```
 
-## 使用示例
+## 使用示例五
 
 - `adm.getJSON/adm.post` API 示例
 
@@ -337,4 +337,22 @@ adm.post(url, data, function(result){}, function(err) {});
 adm.post(url, data)
     .then(function(result){}, function(err) {}))
     .then()...
+```
+
+## 使用示例六
+
+设置缓存有效期示例。适用于数据短期内可能会变动，但请求频繁的情况：
+
+```javascript
+const data = {typeId: 2};
+const param = {
+    data,
+    url: '/rest/user/list',
+    cache: true,
+    fromCache: true,
+    expires: 1000 * 60, // 有效期设置为 1 分钟，也可为 Date 类型
+    cacheName: 'userlist_type_' + data.typeId // 以请求参数区分
+};
+
+adm.get(param).then((result) => {}, (err) => {});
 ```

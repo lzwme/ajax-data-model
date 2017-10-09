@@ -65,7 +65,6 @@ export default {
                 result.message = result.message || '系统错误';
                 this.alert(result.message);
             }
-
         }
 
         return success;
@@ -86,7 +85,7 @@ export default {
         if (0 === err.status) {
             this.alert('登录超时');
             // window.location.reload();
-        } else if (config.errAlert || undefined === config.errAlert && this.errAlert) {
+        } else if (config.errAlert || (void 0) === config.errAlert && this.errAlert) {
             // errAlert = false 时禁止 40x/50x 等错误的全局提示
             this.alert(config.errMsg || this.errMsg || ('数据请求失败: ' + msg));
         }

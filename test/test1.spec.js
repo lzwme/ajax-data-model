@@ -59,8 +59,8 @@ describe('test1: 无 ajax 的数据读写删测试', function () {
     describe('从 sessionStorage 中写读删',
         () => testSimpleWRD(data, 'sessionStorage'));
 
-    describe('从 localStorage 中写读删',
-        () => testSimpleWRD(data, 'localStorage'));
+    // describe('从 localStorage 中写读删',
+    //     () => testSimpleWRD(data, 'localStorage'));
 
     describe('测试 adm.get', () => {
         it('读取一个不存在的值', () => {

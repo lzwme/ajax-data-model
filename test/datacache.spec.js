@@ -21,7 +21,7 @@ describe('DataCache API 测试', function () {
     });
 
     it('getItem', () => {
-        let item = dataCache.getItem('xxx');
+        const item = dataCache.getItem('xxx');
 
         expect(item).to.be.equal(undefined);
     });

@@ -23,7 +23,8 @@ function adjustCacheName(cacheName) {
     }
 
     cacheName = encodeURIComponent(('' + cacheName).replace(/\//g, '.').replace(/^\./, '').replace(/(^\s+|\s+$)/g, ''));
-    if (cacheName.indexOf(settings.cachePrefix) !== 0) {
+    if (cacheName.indexOf(settings.cachePrefix)) {
+        // cacheName.indexOf(settings.cachePrefix) !== 0 加上前缀
         cacheName = settings.cachePrefix + cacheName;
     }
 
@@ -58,10 +59,11 @@ export function getCacheDataByName(cacheName, cacheType) {
         return data;
     }
 
+    data = cacheStor.getItem(cacheName);
     try {
-        data = JSON.parse(cacheStor.getItem(cacheName));
+        data = JSON.parse(data);
     } catch (e) {
-        data = cacheStor.getItem(cacheName);
+        data = data;
     }
 
     // 缓存的数据设置了有效期 data._e
@@ -137,7 +139,7 @@ export function saveTOCache(cacheName, data, cfg = {}) {
     if (+expires) {
         data = {
             d: data,
-            _e: (typeof expires === 'object' && expires.getTime) ? getTime(expires) : (getTime() + expires)
+            _e: (expires instanceof Date) ? getTime(expires) : (getTime() + expires)
         };
     }
 
@@ -155,10 +157,7 @@ export function saveTOCache(cacheName, data, cfg = {}) {
 export function isString(text) {
     const type = typeof text;
 
-    if ('string' === type || 'number' === type) {
-        return true;
-    }
-    return false;
+    return 'string' === type || 'number' === type;
 }
 /**
  * 返回包装done/fail API语法糖的 Promise

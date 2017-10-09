@@ -27,8 +27,8 @@ const LocalStorage = require('node-localstorage').LocalStorage;
 
 global.localStorage = new LocalStorage('./test/localStorageTemp');
 before(function (next) {
-    // global.window = document.defaultView;
-    global.localStorage = new LocalStorage('./test/localStorageTemp');
+    global.window = document.defaultView;
+    global.localStorage = global.localStorage || new LocalStorage('./test/localStorageTemp');
     global.window.localStorage = global.localStorage;
 
     next();

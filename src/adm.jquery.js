@@ -2,12 +2,12 @@
  * @file 全局数据模型 model
  * 提供数据的读取、保存/缓存、删除、更新等操作。各模块 model 可继承该模型，以进行模块范围内的数据存取操作。
  * @module adm
- * @author lizhiwen@meizu.com
- * @since 2016-03-31 - 2016-09-25
+ * @author lzwy0820@qq.com
+ * @since 2016-03-31
  *
  * @example
  * import adm from 'ajax-data-model';
- * let upsModel = $.extend(true, {}, adm, {aa: 'ccc', restapi: {task_type: '/rest/task/type'}});
+ * const upsModel = $.extend(true, {}, adm, {aa: 'ccc', restapi: {task_type: '/rest/task/type'}});
  * // 支持的方法：upsModel.get、upsModel.save、upsModel.delete、upsModel.clear
  * // 配置了 url，则都返回 Promise 对象，不管是否缓存
  * upsModel.get({url: '/rest/xxx'}).done().fail().then();
@@ -19,12 +19,14 @@
  *
  * @example
  * // 获取 task_type 数据
+ * const data = {type: 10};
  * adm.get({
  *     url: upsModel.restapi.task_type,
- *     cache: 'sessionStorage',     // 缓存到 sessionStorage
- *     fromCache: 'sessionStorage', // 获取时优先从 sessionStorage 读取
- *     cacheName: 'task_type', // 缓存、从缓存读取时使用的名称
- *     expires: 1000 * 60 * 5, // 数据有效时间为 5 分钟
+ *     data: data,
+ *     cache: 'sessionStorage',             // 缓存到 sessionStorage
+ *     fromCache: 'sessionStorage',         // 获取时优先从 sessionStorage 读取
+ *     cacheName: 'task_type_' + data.type, // 缓存、从缓存读取时使用的名称
+ *     expires: 1000 * 60 * 5,              // 数据有效时间为 5 分钟
  * }).then((result) => {
  *     let taskTypeList = result.value || [];
  *     console.log(taskTypeList);
@@ -167,14 +169,14 @@ export default {
      * @param {Object} config 为字符串时，从缓存中读取数据，否则为从远程获取数据，参数如下：
      * ```js
      * {
-     *     url: '',
+     *     url: '',          // API url 地址，可为空。为空时应存在 cacheName，此时为从缓存中读取数据
      *     data: {},         // url 请求参数
      *     cache: false,     // 配置了 url 获取数据时，是否缓存数据。可取值：`false/true/sessionStorage/localStorage`
      *     fromCache: false, // 配置了 url，是否首先尝试从缓存中读取数据。可取值：`false/true/sessionStorage/localStorage`
-     *     cacheName: '',    // 配置了 url，如果缓存数据，配置其名称，不配置则取值 url (/ 替换为 . 作为深度路径)
-     *     expires: 0,       // 如果缓存数据，设置缓存数据的有效期，可为 毫秒数，或 Date 类型日期
+     *     cacheName: '',    // 配置了 url 并且 cache 为 true，配置缓存数据的名称，不配置则取值 url (/ 会替换为 . 作为深度路径)
+     *     expires: 0,       // 如果 cache 为 true，设置缓存数据的有效期，可为 毫秒数，或 Date 类型日期
      *     tipConfig: {delay: 2000} // ajax 出错时的提示配置。配置为 false 时，禁用全局的系统提示，包括 成功/出错/404/50x 等
-     *     errAlert: true    // ajax error 时是否给出全局提示
+     *     errAlert: true    // ajax error 时是否给出全局提示，优先级高于 settings.errAlert
      *     waiting: {}       // 按钮等待等配置，用于传递给 settings.fnWaiting 方法
      *     ajaxParam: null   // ajax 额外参数扩展，如涉及文件上传等，需要修改部分参数。其中 url 参数无效，应当使用 config.url
      * }
@@ -396,6 +398,7 @@ export default {
         if (data instanceof Function) {
             errCallback = callback;
             callback = data;
+            data = void 0;
         }
 
         return this.get({

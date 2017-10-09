@@ -26,7 +26,7 @@
         "navType": "vertical",                    //vertical 或 inline
         //docstrap 模板主题。可取值: cosmo, cyborg, flatly, journal, lumen, paper,
         //readable, sandstone, simplex, slate, spacelab, superhero, united, yeti
-        "theme": "dibs-bootstrap",
+        "theme": "cosmo",
         "linenums": true,                         //是否显示行号
         "collapseSymbols": false,                 //是否折叠太长的内容
         "inverseNav": true,                       //导航是否使用 bootstrap 的 inverse header
