@@ -158,6 +158,27 @@ function requestAjax(config, callback, errCallback, fnCB) {
     // return $p;
 }
 
+// 获取缓存数据的名称 key
+function getCacheName(config) {
+    // 第一个参数为字符串，则为名称，直接返回 config 作为缓存名称
+    if (isString(config) || !config) {
+        return config;
+    }
+
+    let cacheName = config.cacheName;
+    const data = config.data;
+
+    if (!cacheName) {
+        cacheName = config.url;
+
+        if (typeof data === 'object') {
+            cacheName += JSON.stringify(data);
+        }
+    }
+
+    return cacheName;
+}
+
 /**
  * 全局数据模型 model
  * @alias module:adm
@@ -190,17 +211,12 @@ export default {
             return undefined;
         }
 
-        let cacheName, cacheData;
+        let cacheData;
         const $promise = getPromise(settings.isJquery);
-
-        if (isString(config)) {
-            // 第一个参数为字符串，则为名称，直接返回对应值
-            cacheName = config;
-        }
+        const cacheName = getCacheName(config);
 
         // 配置了 url，从 url 中获取
         if (config.url) {
-            cacheName = config.cacheName || config.url;
             cacheData = getCacheDataByName(cacheName, config.fromCache);
 
             // fromCache 为 true，尝试从缓存中获取数据
@@ -228,10 +244,7 @@ export default {
             console.trace('配置了 URL 参数，但值为空：', config);
             $promise.reject('配置了 URL 参数，但值为空', config);
         } else {
-            // 未配置 url，则必须配置 cacheName，或者 config 为字符串(作为cacheName)，从缓存中取得数据
-            if (!cacheName && config) {
-                cacheName = config.cacheName;
-            }
+            // 未配置 url，则必须配置 config.cacheName，或者 config 为字符串(作为cacheName)，此时为从缓存中取得数据
             cacheData = getCacheDataByName(cacheName, config.fromCache || callback);
 
             if (callback instanceof Function) {
@@ -260,11 +273,11 @@ export default {
             return '';
         }
 
-        let cacheName, cacheData;
+        let cacheData;
         const $promise = getPromise(settings.isJquery);
+        const cacheName = getCacheName(config);
 
         if (isString(config)) { // config 为字符串，则作为cacheName
-            cacheName = '' + config;
             if (callback instanceof Function) { // 可以存储为回调方法执行后的结果
                 saveTOCache(cacheName, callback(), errCallback);
             } else {
@@ -272,7 +285,6 @@ export default {
             }
             $promise.resolve(cacheName);
         } else if (config.url) { // 配置了 url，将数据存储到远程
-            cacheName = config.cacheName || config.url;
             cacheData = getCacheDataByName(cacheName, config.fromCache);
 
             // fromCache 为 true，尝试从缓存中获取数据
@@ -299,8 +311,8 @@ export default {
         } else if (config.hasOwnProperty('url')) { // 配置了url，但 url 值为空
             console.trace('配置了 URL 参数，但值为空：', config);
             $promise.reject('配置了 URL 参数，但值为空', config);
-        } else if (config.cacheName) { // 没有设置 url，但设置了 cacheName，则保存数据到本地
-            saveTOCache(config.cacheName, config.data, config);
+        } else if (cacheName) { // 没有设置 url，但设置了 config.cacheName(此时 cacheName=config.cachename)，则保存数据到本地
+            saveTOCache(cacheName, config.data, config);
 
             if (callback instanceof Function) {
                 callback(cacheData);
@@ -327,7 +339,7 @@ export default {
         }
 
         const $promise = getPromise(settings.isJquery);
-        let cacheName;
+        const cacheName = getCacheName(config);
 
         if (isString(config) || config instanceof RegExp) {
             // 第一个参数为字符串或正则，callback 就是 cacheType
@@ -341,15 +353,14 @@ export default {
             }, () => {
                 if (config.cache) {
                     // 远程删除成功了，本地也需清空时
-                    cacheName = config.cacheName || config.url;
                     deleteCacheDataByName(cacheName, config.cache);
                 }
             });
         } else if (config.hasOwnProperty('url')) { // 配置了url，但 url 值为空
             console.trace('配置了 URL 参数，但值为空：', config);
             $promise.reject('配置了 URL 参数，但值为空', config);
-        } else if (config && config.cacheName) {
-            deleteCacheDataByName(config.cacheName, config.cache);
+        } else if (cacheName) {
+            deleteCacheDataByName(cacheName, config.cache);
             $promise.resolve();
         }
 
