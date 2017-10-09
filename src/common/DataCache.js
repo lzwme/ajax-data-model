@@ -24,8 +24,10 @@ class DataCache {
      * @param {*} value
      */
     setItem(key, value) {
+        if (!this.cache.hasOwnProperty(key)) {
+            this.length++;
+        }
         this.cache[key] = value;
-        this.length++;
     }
     /**
      * 删除一个值

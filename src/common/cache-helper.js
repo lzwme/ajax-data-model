@@ -73,6 +73,9 @@ export function getCacheDataByName(cacheName, cacheType) {
         if (getTime() - data._e < 0) {
             return data.d;
         }
+        // 已过期，数据无效了，移除它
+        cacheStor.removeItem(cacheName);
+
         return undefinedVal;
     }
 
