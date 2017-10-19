@@ -48,6 +48,10 @@ import {
     getPromise
 } from './common/cache-helper';
 
+// 常量定义
+const WIN = window;
+const ERRURLMSG = '配置了 URL 参数，但值为空或类型不对';
+
 /**
  * ajax 请求通用方法
  * @param {Object}   config - 请求参数配置
@@ -68,8 +72,8 @@ function requestAjax(config, callback, errCallback, fnCB) {
     const $p = getPromise(settings.isJquery);
 
     if (!config.url || typeof config.url !== 'string') {
-        console.trace('请求 URL API 不存在，或格式不对：', config.url);
-        return $p.reject('请求 URL API 不存在，或格式不对：', config.url);
+        console.trace(ERRURLMSG, config.url);
+        return $p.reject(ERRURLMSG, config.url);
     }
 
     // data.btnWaiting 的兼容，应使用 config.waiting 参数
@@ -81,7 +85,7 @@ function requestAjax(config, callback, errCallback, fnCB) {
     // jsonp 兼容
     let dataType = 'json';
 
-    if (/^https?:\/\//.test(config.url) && config.url.search(window.location.host) === -1) {
+    if (/^https?:\/\//.test(config.url) && config.url.search(WIN.location.host) === -1) {
         dataType = 'jsonp';
     }
 
@@ -166,13 +170,21 @@ function getCacheName(config) {
     }
 
     let cacheName = config.cacheName;
+    let dataStr;
+    const md5 = WIN.md5 || WIN.$ && WIN.$.md5;
     const data = config.data;
 
     if (!cacheName) {
         cacheName = config.url;
 
-        if (typeof data === 'object') {
-            cacheName += JSON.stringify(data);
+        if (cacheName && typeof data === 'object') {
+            strData = JSON.stringify(data);
+
+            if (typeof md5 === 'function') {
+                strData = md5(strData);
+            }
+
+            cacheName += dataStr;
         }
     }
 
@@ -241,8 +253,8 @@ export default {
                 }
             });
         } else if (config.hasOwnProperty('url')) { // 配置了 url，但 url 值为空
-            console.trace('配置了 URL 参数，但值为空：', config);
-            $promise.reject('配置了 URL 参数，但值为空', config);
+            console.trace(ERRURLMSG, config);
+            $promise.reject(ERRURLMSG, config);
         } else {
             // 未配置 url，则必须配置 config.cacheName，或者 config 为字符串(作为cacheName)，此时为从缓存中取得数据
             cacheData = getCacheDataByName(cacheName, config.fromCache || callback);
@@ -265,17 +277,21 @@ export default {
      * // 存储数据到 localStorage，名称为 testdataName
      * adm.save('testdataName', {test: 1}, 'localStorage');
      * @example
-     * // 存储数据到远程，同时存储到 sessionStorage
+     * // 存储数据到远程，同时将 API 返回的结果存储到 sessionStorage
      * adm.save({url: '/rest/dd', data: {test: 1}, cache: 'sessionStorage'});
      */
     save(config, callback, errCallback) {
+        const $promise = getPromise(settings.isJquery);
+        const resolve = $promise.resolve;
+        const reject = $promise.reject;
+
         if (!config) {
-            return '';
+            resolve();
+            return $promise;
         }
 
         let cacheData;
-        const $promise = getPromise(settings.isJquery);
-        const cacheName = getCacheName(config);
+        const cacheName = getCacheName(config, true);
 
         if (isString(config)) { // config 为字符串，则作为cacheName
             if (callback instanceof Function) { // 可以存储为回调方法执行后的结果
@@ -283,7 +299,7 @@ export default {
             } else {
                 saveTOCache(cacheName, callback, errCallback);
             }
-            $promise.resolve(cacheName);
+            resolve(cacheName);
         } else if (config.url) { // 配置了 url，将数据存储到远程
             cacheData = getCacheDataByName(cacheName, config.fromCache);
 
@@ -293,7 +309,7 @@ export default {
                     callback(cacheData);
                 }
 
-                $promise.resolve(cacheData);
+                resolve(cacheData);
                 // return cacheData; // 返回数据
                 return $promise; // 这里改了后不兼容旧的调用，应该注意 bug 的出现！
             }
@@ -309,15 +325,15 @@ export default {
                 }
             });
         } else if (config.hasOwnProperty('url')) { // 配置了url，但 url 值为空
-            console.trace('配置了 URL 参数，但值为空：', config);
-            $promise.reject('配置了 URL 参数，但值为空', config);
-        } else if (cacheName) { // 没有设置 url，但设置了 config.cacheName(此时 cacheName=config.cachename)，则保存数据到本地
+            console.trace(ERRURLMSG, config);
+            reject(ERRURLMSG, config);
+        } else if (cacheName) { // 没有设置 url，但设置了 config.cacheName(此时 cacheName=config.cacheName)，则保存数据到本地
             saveTOCache(cacheName, config.data, config);
 
             if (callback instanceof Function) {
                 callback(cacheData);
             }
-            $promise.resolve(config.data);
+            resolve(config.data);
         }
 
         return $promise;
@@ -357,8 +373,8 @@ export default {
                 }
             });
         } else if (config.hasOwnProperty('url')) { // 配置了url，但 url 值为空
-            console.trace('配置了 URL 参数，但值为空：', config);
-            $promise.reject('配置了 URL 参数，但值为空', config);
+            console.trace(ERRURLMSG, config);
+            $promise.reject(ERRURLMSG, config);
         } else if (cacheName) {
             deleteCacheDataByName(cacheName, config.cache);
             $promise.resolve();
