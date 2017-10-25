@@ -50,6 +50,7 @@ import {
 
 // 常量定义
 const WIN = window;
+const logTrace = WIN.console.trace;
 const ERRURLMSG = '配置了 URL 参数，但值为空或类型不对';
 
 /**
@@ -72,7 +73,7 @@ function requestAjax(config, callback, errCallback, fnCB) {
     const $p = getPromise(settings.isJquery);
 
     if (!config.url || typeof config.url !== 'string') {
-        console.trace(ERRURLMSG, config.url);
+        logTrace(ERRURLMSG, config.url);
         return $p.reject(ERRURLMSG, config.url);
     }
 
@@ -171,14 +172,14 @@ function getCacheName(config) {
 
     let cacheName = config.cacheName;
     let dataStr;
-    const md5 = WIN.md5 || WIN.$ && WIN.$.md5;
+    const md5 = WIN.$ && WIN.$.md5 || WIN.md5;
     const data = config.data;
 
     if (!cacheName) {
         cacheName = config.url;
 
         if (cacheName && typeof data === 'object') {
-            strData = JSON.stringify(data);
+            let strData = JSON.stringify(data);
 
             if (typeof md5 === 'function') {
                 strData = md5(strData);
@@ -189,6 +190,11 @@ function getCacheName(config) {
     }
 
     return cacheName;
+}
+
+// obj 对象中是否包含键为 key 的项
+function hasOwnProperty(obj, key) {
+    return obj.hasOwnProperty(key);
 }
 
 /**
@@ -252,8 +258,8 @@ export default {
                     this.save(cacheName, result, config);
                 }
             });
-        } else if (config.hasOwnProperty('url')) { // 配置了 url，但 url 值为空
-            console.trace(ERRURLMSG, config);
+        } else if (hasOwnProperty(config, 'url')) { // 配置了 url，但 url 值为空
+            logTrace(ERRURLMSG, config);
             $promise.reject(ERRURLMSG, config);
         } else {
             // 未配置 url，则必须配置 config.cacheName，或者 config 为字符串(作为cacheName)，此时为从缓存中取得数据
@@ -324,8 +330,8 @@ export default {
                     saveTOCache(cacheName, result, config);
                 }
             });
-        } else if (config.hasOwnProperty('url')) { // 配置了url，但 url 值为空
-            console.trace(ERRURLMSG, config);
+        } else if (hasOwnProperty(config, 'url')) { // 配置了url，但 url 值为空
+            logTrace(ERRURLMSG, config);
             reject(ERRURLMSG, config);
         } else if (cacheName) { // 没有设置 url，但设置了 config.cacheName(此时 cacheName=config.cacheName)，则保存数据到本地
             saveTOCache(cacheName, config.data, config);
@@ -372,8 +378,8 @@ export default {
                     deleteCacheDataByName(cacheName, config.cache);
                 }
             });
-        } else if (config.hasOwnProperty('url')) { // 配置了url，但 url 值为空
-            console.trace(ERRURLMSG, config);
+        } else if (hasOwnProperty(config, 'url')) { // 配置了url，但 url 值为空
+            logTrace(ERRURLMSG, config);
             $promise.reject(ERRURLMSG, config);
         } else if (cacheName) {
             deleteCacheDataByName(cacheName, config.cache);
@@ -489,7 +495,7 @@ export default {
         for (item in setting) {
             if ('cachePrefix' === item) {
                 this.setCachePrefix(setting[item], false);
-            } else if (settings.hasOwnProperty(item)) {
+            } else if (hasOwnProperty(settings, item)) {
                 settings[item] = setting[item];
             }
         }

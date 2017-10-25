@@ -3,9 +3,9 @@
  * @see http://chaijs.com/api/bdd/
  */
 import chai from 'chai';
-import adm from '../../src/adm.jquery.js';
 import jsdom from 'mocha-jsdom';
 import fs from 'fs';
+// import adm from '../../src/adm.jquery.js';
 
 jsdom({
     url: 'http://127.0.0.1:3131',
@@ -15,8 +15,8 @@ jsdom({
 });
 
 global.fs = fs;
-global.adm = adm;
 global.chai = chai;
+// global.adm = adm;
 
 // 使用 chai.expect 断言
 chai.expect();
@@ -27,6 +27,7 @@ const LocalStorage = require('node-localstorage').LocalStorage;
 
 global.localStorage = new LocalStorage('./test/localStorageTemp');
 before(function (next) {
+    global.adm = require('../../src/adm.jquery.js');
     global.window = document.defaultView;
     global.localStorage = global.localStorage || new LocalStorage('./test/localStorageTemp');
     global.window.localStorage = global.localStorage;

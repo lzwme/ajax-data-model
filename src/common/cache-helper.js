@@ -133,7 +133,7 @@ export function saveTOCache(cacheName, data, cfg = {}) {
         return;
     }
 
-    console.log(cacheName, data, cfg);
+    // console.log(cacheName, data, cfg);
 
     const {cache: cacheType, expires} = cfg;
     const cacheStor = getCacheStor(cacheType);
