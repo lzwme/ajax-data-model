@@ -31,3 +31,6 @@ localStorageTemp
 /api/
 
 coverage/
+
+package-lock.json
+yarn.lock
